@@ -1,12 +1,7 @@
 const { Router, json } = require('express');
-const router = Router();
+const routes = Router();
 const fs = require('fs');
 const tareas = process.argv[2];
-
-fs.writeFile(tareas,"Creando archivo", {encoding : "utf8"},(err) =>{
-    if(err) console.error("Ha ocurrido un error");
-    else    console.log("Se ha creado el archivo: " + tareas);
-});
 
 routes.get("/", (req, res) => {
     res.json(tareas)
@@ -49,6 +44,7 @@ routes.put("/:id", (req, res) => {
 });
 
 routes.delete("/:id", (req, res) => {
+
   
     res.json({ message: `Chore whit id ${req.params.id} deleted` });
 });
