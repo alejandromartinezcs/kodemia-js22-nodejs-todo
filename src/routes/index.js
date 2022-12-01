@@ -7,9 +7,9 @@
 const tareasRouter = require("./tareasRouter");
 
 const apiRouter = (app) => {
-    // app.use("./usersRouter.js", usersRouter);
-    // app.use("./categoriesRouter.js", categoriesRouter);
-    app.use("./tareasRouter.js", tareasRouter);
+    // app.use("./usersRouter", usersRouter);
+    // app.use("./categoriesRouter", categoriesRouter);
+    app.use("/tareasRouter", tareasRouter);
 };
 
 module.exports = apiRouter;

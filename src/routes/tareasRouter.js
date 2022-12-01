@@ -1,14 +1,21 @@
 const { Router, json } = require('express');
 const routes = Router();
-const fs = require('fs');
-const tareas = process.argv[2];
+const fs = require('fs/promises');
 
-routes.get("/", (req, res) => {
-    res.json(tareas)
+routes.get("/", async (req, res) => {
+    const tareas = await fs.readFile("./MOCK_DATA.json");
+    console.log(tareas)
+    const data = JSON.parse(tareas.toString());
+    res.json(data);
 })
 
-routes.get("/:id", (req, res) => {
-    const data = tareas.find((tarea) => {
+routes.get("/:id", async (req, res) => {
+  
+    const tareas = await fs.readFile("./MOCK_DATA.json")
+    
+    const dataJson = JSON.parse(tareas.toString())
+
+    const data = dataJson.find((tarea) => {
         return tarea.id == req.params.id;
     });
 
@@ -21,9 +28,7 @@ routes.get("/:id", (req, res) => {
 
 routes.post("/", (req, res) => {
     const data = req.body;
-  
-    // Lógica para crear un usuario con los datos obtenidos
-  
+    
     const { id, tarea, estado } = data;
     const newChore = { id: 51, tarea, estado };
   
@@ -36,16 +41,13 @@ routes.post("/", (req, res) => {
         payload: newChore,
       });
     }
-  });
+});
 
 routes.put("/:id", (req, res) => {
-  
     res.json({ message: `Chore whit id ${req.params.id} modified` });
 });
 
-routes.delete("/:id", (req, res) => {
-
-  
+routes.delete("/:id", (req, res) => { 
     res.json({ message: `Chore whit id ${req.params.id} deleted` });
 });
   
