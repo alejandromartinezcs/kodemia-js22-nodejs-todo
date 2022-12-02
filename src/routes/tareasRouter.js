@@ -4,7 +4,6 @@ const fs = require('fs/promises');
 
 routes.get("/", async (req, res) => {
     const tareas = await fs.readFile("./MOCK_DATA.json");
-    console.log(tareas)
     const data = JSON.parse(tareas.toString());
     res.json(data);
 })
@@ -24,11 +23,18 @@ routes.get("/:id", async (req, res) => {
       }
 });
 
-routes.post("/", (req, res) => {
-    const data = req.body;
+routes.post("/", async (req, res) => {
+      
+    const tareas = await fs.readFile("./MOCK_DATA.json");
+    const data = JSON.parse(tareas.toString());
 
-    const { id, tarea, estado } = data;
-    const newChore = { id: 51, tarea, estado };
+    const id = req.body;
+    const tarea = req.body;
+    const estado = req.body;
+    
+    data.push({id, tarea, estado})
+
+    const updateChore = await fs.writeFile("./MOCK_DATA.json", JSON.stringify(data))
   
     if (!data) {
       res.status(400).json({ message: "Chore data is required" });
@@ -36,7 +42,7 @@ routes.post("/", (req, res) => {
       res.status(201).json({
         ok: true,
         message: "Chore created",
-        payload: newChore,
+        payload: updateChore,
       });
     }
 });
