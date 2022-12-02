@@ -15,12 +15,10 @@ routes.get("/:id", async (req, res) => {
     
     const dataJson = JSON.parse(tareas.toString())
 
-    const data = dataJson.find((tarea) => {
-        return tarea.id == req.params.id;
-    });
+    const data = dataJson.find((tarea) => {return tarea.id == req.params.id});
 
     if (data) {
-        res.json(data);
+      res.json(data);
       } else {
         res.status(404).json({ message: "Chore not found" });
       }
@@ -28,7 +26,7 @@ routes.get("/:id", async (req, res) => {
 
 routes.post("/", (req, res) => {
     const data = req.body;
-    
+
     const { id, tarea, estado } = data;
     const newChore = { id: 51, tarea, estado };
   
@@ -47,7 +45,18 @@ routes.put("/:id", (req, res) => {
     res.json({ message: `Chore whit id ${req.params.id} modified` });
 });
 
-routes.delete("/:id", (req, res) => { 
+routes.delete("/:id", async (req, res) => {
+    const { id } = req.params
+    const fileContent = await fs.readFile("./MOCK_DATA.json")
+    const chores = JSON.parse(fileContent.toString())
+
+    const filter = chores.filter(element => element.id != id);
+
+    const newChores = JSON.stringify(filter)
+
+    fs.writeFile("./MOCK_DATA.json", newChores)
+    
+
     res.json({ message: `Chore whit id ${req.params.id} deleted` });
 });
   
