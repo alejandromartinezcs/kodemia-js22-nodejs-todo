@@ -11,9 +11,7 @@ routes.get("/", async (req, res) => {
 routes.get("/:id", async (req, res) => {
   
     const tareas = await fs.readFile("./MOCK_DATA.json")
-    
     const dataJson = JSON.parse(tareas.toString())
-
     const data = dataJson.find((tarea) => {return tarea.id == req.params.id});
 
     if (data) {
@@ -47,8 +45,23 @@ routes.post("/", async (req, res) => {
     }
 });
 
-routes.put("/:id", (req, res) => {
-    res.json({ message: `Chore whit id ${req.params.id} modified` });
+routes.put("/:id", async (req, res) =>{
+  const { id } = req.params;
+  const { tarea } = req.body;
+  const { estado } = req.body;
+
+  const fileContent = await fs.readFile("./MOCK_DATA.json")
+  const chores = JSON.parse(fileContent.toString());
+
+  const filter = chores.filter(element => element.id != id);
+  const newChores = JSON.parse(JSON.stringify(filter))
+   
+  id = parseInt(id)
+
+  newChores.push({id, tarea, estado})
+
+  res.json({ok: true, payload:newChores})
+
 });
 
 routes.delete("/:id", async (req, res) => {
@@ -67,5 +80,3 @@ routes.delete("/:id", async (req, res) => {
 });
   
 module.exports = routes;
-
-
