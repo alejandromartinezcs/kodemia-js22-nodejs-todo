@@ -55,10 +55,10 @@ routes.put("/:id", async (req, res) =>{
 
   const filter = chores.filter(element => element.id != id);
   const newChores = JSON.parse(JSON.stringify(filter))
-   
-  id = parseInt(id)
 
   newChores.push({id, tarea, estado})
+
+  const updateChore = await fs.writeFile("./MOCK_DATA.json", JSON.stringify(newChores))
 
   res.json({ok: true, payload:newChores})
 
@@ -74,8 +74,6 @@ routes.delete("/:id", async (req, res) => {
     const newChores = JSON.stringify(filter)
 
     fs.writeFile("./MOCK_DATA.json", newChores)
-    
-
     res.json({ message: `Chore whit id ${req.params.id} deleted` });
 });
   
