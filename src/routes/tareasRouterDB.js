@@ -1,11 +1,11 @@
 const fs = require("fs/promises");
 const router = require("express").Router();
-const categoryUseCases = require("../usecases/category");
+const taskUseCases = require("../usecases/task");
 
 router.get("/", async (req, res) => {
   try {
-    const categories = await categoryUseCases.getAll();
-    res.json({ ok: true, payload: categories });
+    const tarea = await taskUseCases.getAll();
+    res.json({ ok: true, payload: tarea });
   } catch (error) {
     res.status(400).json({ ok: false, message: error });
   }
@@ -15,10 +15,10 @@ router.get("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const { name, products } = await categoryUseCases.getById(id);
+    const { titulo, tarea } = await taskUseCases.getById(id);
     res.json({
       ok: true,
-      payload: { name, products, numberOfProducts: products.length },
+      payload: { titulo, tarea, fecha},
     });
   } catch (error) {
     res.status(400).json({ ok: false, message: error });
@@ -26,13 +26,15 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name } = req.body;
+  const { titulo } = req.body;
+  const { tarea } = req.body;
+  const { fecha } = req.body;
 
   try {
-    const payload = await categoryUseCases.create(name);
+    const payload = await taskUseCases.create(titulo);
     res.json({
       ok: true,
-      message: "Category created successfully",
+      message: "Task created successfully",
       payload,
     });
   } catch (error) {
@@ -40,17 +42,18 @@ router.post("/", async (req, res) => {
       ok: false,
       message: error,
     });
+    console.log(error);
   }
 });
 
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { name, products } = req.body;
+  const { titulo, tarea } = req.body;
 
   try {
-    const data = { name, products };
-    const category = await categoryUseCases.update(id, data);
-    res.json({ ok: true, payload: category });
+    const data = { titulo, tarea };
+    const tareas = await taskUseCases.update(id, data);
+    res.json({ ok: true, payload: tareas });
   } catch (error) {
     const { message } = error;
     res.status(400).json({ ok: false, message });
@@ -60,9 +63,9 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, products } = await categoryUseCases.del(id);
+    const { titulo, tarea } = await taskUseCases.del(id);
 
-    res.json({ ok: true, payload: { name, products } });
+    res.json({ ok: true, payload: { titulo, tarea } });
   } catch (error) {
     const { message } = error;
     res.status(400).json({ ok: false, message });
@@ -70,5 +73,3 @@ router.delete("/:id", async (req, res) => {
 });
 
 module.exports = router;
-
-
