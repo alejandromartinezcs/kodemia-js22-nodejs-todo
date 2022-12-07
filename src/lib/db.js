@@ -6,7 +6,7 @@ const connect = () => {
     const { user, password, host } = config.db;
 
     mongoose.connect(
-      `mongodb+srv://diego:diego23@cluster0.usdifh5.mongodb.net/?retryWrites=true&w=majority`
+      `mongodb+srv://${user}:${password}@${host}/?retryWrites=true&w=majority`
     );
 
     const db = mongoose.connection;

@@ -1,28 +1,79 @@
-const { Router, json } = require('express');
-const router = Router();
+const fs = require("fs/promises");
+const router = require("express").Router();
+const categoryUseCases = require("../usecases/category");
 
 const categories = [
-    { catId:1, catName:'Linux' },
-    { catId:2, catName:'Maquetado' },
-    { catId:3, catName:'JavaScript' },
-    { catId:4, catName:'FrontEnd' },
+  { id: 1, name: "Hombre" },
+  { id: 2, name: "Mujer" },
+  { id: 3, name: "Niños/Niñas" },
+  { id: 4, name: "Mascotas" },
 ];
 
-router.get("/", (req, res) => {
-    res.json(categories)
+router.get("/", async (req, res) => {
+  try {
+    const categories = await categoryUseCases.getAll();
+    res.json({ ok: true, payload: categories });
+  } catch (error) {
+    res.status(400).json({ ok: false, message: error });
+  }
 });
 
-router.get("/:id", (req, res) => {
-    const category = categories.find((element) => element.id == req.params.id);
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
 
-    if(!category) {
-        res.status(404).json({ message: "Categorie not found" });
-    } else {
-        res.json(category);
-    }
+  try {
+    const { name, products } = await categoryUseCases.getById(id);
+    res.json({
+      ok: true,
+      payload: { name, products, numberOfProducts: products.length },
+    });
+  } catch (error) {
+    res.status(400).json({ ok: false, message: error });
+  }
 });
 
-// router.post("/", (req, res) => {
-//     console.log("Request Body: ", req.body);
-//     res.status(200).json( { message: "Category created!"} )
-// })
+router.post("/", async (req, res) => {
+  const { name } = req.body;
+
+  try {
+    const payload = await categoryUseCases.create(name);
+    res.json({
+      ok: true,
+      message: "Category created successfully",
+      payload,
+    });
+  } catch (error) {
+    res.status(400).json({
+      ok: false,
+      message: error,
+    });
+  }
+});
+
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, products } = req.body;
+
+  try {
+    const data = { name, products };
+    const category = await categoryUseCases.update(id, data);
+    res.json({ ok: true, payload: category });
+  } catch (error) {
+    const { message } = error;
+    res.status(400).json({ ok: false, message });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, products } = await categoryUseCases.del(id);
+
+    res.json({ ok: true, payload: { name, products } });
+  } catch (error) {
+    const { message } = error;
+    res.status(400).json({ ok: false, message });
+  }
+});
+
+module.exports = router;
